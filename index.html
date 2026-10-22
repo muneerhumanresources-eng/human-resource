@@ -36,7 +36,7 @@ body{overflow-x:hidden}.app{visibility:hidden;opacity:0;transition:opacity .45s 
       <div id="authError" class="auth-error"></div>
       <button class="auth-submit" type="submit">دخول آمن إلى النظام</button>
     </form>
-    <div class="demo-users"><button class="demo-user" type="button" onclick="fillDemo('admin')">المدير العام</button><button class="demo-user" type="button" onclick="fillDemo('supervisor')">مشرف الموظفين</button></div>
+    <div class="demo-users"><button class="demo-user" type="button" onclick="quickLogin('admin')">المدير العام</button><button class="demo-user" type="button" onclick="quickLogin('supervisor')">مشرف الموظفين</button></div>
     <div class="auth-meta">للنموذج التجريبي: كلمة السر للحسابين هي <b>1234</b></div>
   </section>
 </div>
@@ -95,6 +95,7 @@ function can(action){return currentRole==='المدير العام'||!['payroll'
 function applyPermissions(){const limited=currentRole!=='المدير العام';['backupBtn','restoreBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=limited?'none':''});document.querySelectorAll('[data-manager-only]').forEach(el=>el.style.display=limited?'none':'')}
 function showLogin(){document.getElementById('authScreen').style.display='none';const l=document.getElementById('loginScreen');l.style.display='grid';l.classList.add('auth-screen');setTimeout(()=>document.getElementById('authUser').focus(),120)}
 function fillDemo(user){document.getElementById('authUser').value=user;document.getElementById('authPass').value='1234';document.getElementById('authError').textContent='';document.getElementById('authPass').focus()}
+function quickLogin(user){const account=AUTH_USERS[user];if(!account)return;document.getElementById('authUser').value=user;document.getElementById('authPass').value=account.password;document.getElementById('authError').textContent='';activateApp(user,account.role)}
 function login(e){e.preventDefault();const u=document.getElementById('authUser').value.trim().toLowerCase(),p=document.getElementById('authPass').value,account=AUTH_USERS[u];if(!account||account.password!==p){document.getElementById('authError').textContent='بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى';return}sessionStorage.setItem('HOTERA_AUTH',JSON.stringify({user:u,role:account.role}));activateApp(u,account.role)}
 function activateApp(user,role){currentRole=role;document.getElementById('authScreen').style.display='none';document.getElementById('loginScreen').style.display='none';document.querySelector('.app').classList.add('authenticated');const b=document.getElementById('userBadge');b.textContent=role;b.style.display='inline-flex';const rn=document.getElementById('roleNotice');if(rn)rn.textContent=role==='المدير العام'?'صلاحيات كاملة وإدارة النظام':'إدارة الموظفين والعقود والحضور';applyPermissions();}
 function logout(){sessionStorage.removeItem('HOTERA_AUTH');document.querySelector('.app').classList.remove('authenticated');document.getElementById('userBadge').style.display='none';document.getElementById('loginScreen').style.display='grid';document.getElementById('authUser').value='';document.getElementById('authPass').value='';document.getElementById('authError').textContent=''}
